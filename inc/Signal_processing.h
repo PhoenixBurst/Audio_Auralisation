@@ -1,4 +1,4 @@
-/*******  user\apps\Audio_Pitch_Detection\inc\FFT_processing.h
+/*******  user\apps\Audio\Audio_Auralisation\inc\Signal_processing.h
 *
 * Summary:
 *		FFT function 
@@ -19,6 +19,7 @@
 *
 * Functions:
 *		void FFT(int framsize, fractional *audioIN, fractcomplex *compX)		
+*		void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX)
 *		int pitchDetection(fractcomplex *compXFftResults) 
 *
 * Notes:
@@ -28,8 +29,7 @@
 *		Sören Schreiber, Student Kingston University, DSP Course, soeren.schreiber@arcor.de
 *
 * Version:
-*		1.1		23/03/2016	--		removed convertInputForFFT function, commented sourcecode
-*		1.0		17/03/2016
+*		1.0		19/04/2016
 *
 */
 #ifndef FFT_INIT
@@ -42,6 +42,7 @@
 #define COEFFS_IN_DATA 0xFF00	// Coefficiants for the Twid factors
 
 void FFT(int framesize, fractional *audioIN, fractcomplex *compX);
+void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX);
 int pitchDetection(fractcomplex *compXFftResults);
 
 #endif

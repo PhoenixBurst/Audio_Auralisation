@@ -1,19 +1,20 @@
-/*******  user\apps\Audio_Pitch_Detection\inc\LED_control.c
+/*******  user\apps\Audio\Audio_Auraljisation\src\Peripheral_control.c
 *
 * Summary:
-*		LED Control function for different programm states
+*		Peripheral Control function for different programm states
 *
 * Inputs:
-*		State of the programm, LEDs			int, define states
+*		State of the programm			int
 *
 * Outputs:
 *		LEDs output
 *
 * Functions:
-*		int displayState(int state)
-*		void displayLED(int led_red, int led_yellow, int led_green)
-*		void readyState()
-*		void errorState()
+*		int displayState(int state);
+*		void readyState();
+*		void errorState();
+*		void analysingState();
+*		void playbackState();
 *
 * Notes:
 *		none
@@ -22,9 +23,8 @@
 *		Sören Schreiber, Student Kingston University, DSP Course, soeren.schreiber@arcor.de
 *
 * Version:
-*		1.0		15/03/2016
-*		1.1		16/03/2016		--		working implementations for all functions + testing of said implementations
-*		1.1		24/03/2016		--		added comments to source code
+*		1.0		19/04/2016
+*
 *
 */
 #include <board\h\sask.h>
@@ -48,42 +48,20 @@ int displayState(int state)	//hub function for state selection of the program
 		case 1:
 				currentState=1;	//set current state to 1
 				break;
+		case 3:
+				currentState=3; //set current state to 3
+				analysingState(0);
+				break;
+		case 4:
+				currentState=4;
+				playbackState();
+				break;
 		default:
 				currentState=2;	//set current state to 2
 				errorState();	//display error state on the LEDs
 	}
 
 	return currentState;	//return current state to the calling program code
-}
-
-void displayLED(int led_red, int led_yellow, int led_green)	//function for selective LED control
-{
-	if(led_red==1)	
-	{
-		RED_LED=SASK_LED_ON;	//turn on red LED
-	}
-	else if(led_red==0)
-	{
-		RED_LED=SASK_LED_OFF;	//turn off red LED
-	}
-
-	if(led_yellow==1)
-	{
-		YELLOW_LED=SASK_LED_ON;	//turn on yellow LED
-	}
-	else if(led_yellow==0)
-	{
-		YELLOW_LED=SASK_LED_OFF;//turn off yellow LED
-	}
-
-	if(led_green==1)
-	{
-		GREEN_LED=SASK_LED_ON;	//turn on green LED
-	}
-	else if(led_green==0)
-	{
-		GREEN_LED=SASK_LED_OFF;	//turn off green LED
-	}
 }
 
 void readyState()	//function to display ready state using the LEDs
@@ -102,32 +80,103 @@ void readyState()	//function to display ready state using the LEDs
 		}
 		else
 		{
-			switch(led_selector)
-			{
-				case 0:			//turn on red LED, turn off yellow and green LEDs
-					RED_LED=SASK_LED_ON;
-					YELLOW_LED=SASK_LED_OFF;
-					GREEN_LED=SASK_LED_OFF;
-					led_selector=led_selector+1;
-					break;
-				case 1:			//turn on yellow LED, turn off red and green LEDs
-					RED_LED=SASK_LED_OFF;
-					YELLOW_LED=SASK_LED_ON;
-					GREEN_LED=SASK_LED_OFF;
-					led_selector=led_selector+1;
-					break;
-				case 2:			//turn on green LED, turn off red and yellow LEDs
-					RED_LED=SASK_LED_OFF;
-					YELLOW_LED=SASK_LED_OFF;
-					GREEN_LED=SASK_LED_ON;
-					led_selector=0;
-					break;
-				default:		//if an error occurse set program into error state
-					errorState();
-			}
+			GREEN_LED=SASK_LED_ON;
+			YELLOW_LED=SASK_LED_OFF;
+			RED_LED=SASK_LED_OFF;
 		
 			ex_timer_wait(timeout); //wait for the time[in seconds] set in timeout(defined in header file)
 		}
+	}
+}
+
+void analysingState(int type) //display analysing state on leds
+{
+	turnOffAll();
+
+	if(type==0)
+	{
+		while(1)
+		{
+			if((SWITCH_S1==1) && (SWITCH_S2==0))	//check if switch 1 and 2 are pressed
+			{
+				currentState=4;			//set current state to play back
+				break;
+			}
+			
+			RED_LED=SASK_LED_OFF
+			YELLOW_LED=SASK_LED_ON;
+			GREEN_LED=SASK_LED_OFF
+		}
+	}
+	else if(type==1)
+	{
+		RED_LED=SASK_LED_ON;
+		YELLOW_LED=SASK_LED_OFF;
+		GREEN_LED=SASK_LED_OFF;
+	}
+	else if(type==2)
+	{
+		RED_LED=SASK_LED_ON;
+		YELLOW_LED=SASK_LED_ON;
+		GREEN_LED=SASK_LED_OFF;
+	}
+	else if(type=3)
+	{
+		RED_LED=SASK_LED_ON;
+		YELLOW_LED=SASK_LED_ON;
+		GREEN_LED=SASK_LED_ON;
+	}
+	else
+	{
+		errorState();
+	}
+}
+
+void playbackState() //display playback state on leds
+{
+	instruction_clock_frequency = clock_frequency;				//set up variable needed for fo the timer function
+	instruction_cycle_time = 1.0 / instruction_clock_frequency;	//set up variable needed for fo the timer function
+
+	ex_timer_init( instruction_cycle_time );			//init timer 
+
+	int cycling=TRUE;
+	int cycle=0;
+
+	turnOffAll();
+
+	while(cycling)
+	{
+		if(cycle==0)
+		{
+			RED_LED=SASK_LED_ON;
+			YELLOW_LED=SASK_LED_OFF;
+			GREEN_LED=SASK_LED_OFF;
+			
+			cycle=cycle+1;
+		}
+		else if(cycle==1)
+		{
+			RED_LED=SASK_LED_OFF;
+			YELLOW_LED=SASK_LED_ON;
+			GREEN_LED=SASK_LED_OFF;
+			
+			cycle=cycle+1;
+		}
+		else if(cycle==2)
+		{
+			RED_LED=SASK_LED_OFF;
+			YELLOW_LED=SASK_LED_OFF;
+			GREEN_LED=SASK_LED_ON;
+		
+			cycling=FALSE;
+		}
+		else
+		{
+			errorState();
+			break;
+		}
+		
+		ex_timer_wait(timeout);	//wait for the time[in seconds] set in timeout(defined in header file)
 	}
 }
 
@@ -168,4 +217,18 @@ void errorState()		//display error state on the LEDs
 
 		ex_timer_wait(timeout);	//wait for the time[in seconds] set in timeout(defined in header file)
 	}
+}
+
+void turnOffAll()
+{
+	RED_LED=SASK_LED_OFF;
+	YELLOW_LED=SASK_LED_OFF;
+	GREEN_LED=SASK_LED_OFF;
+}
+
+void turnOnAll()
+{
+	RED_LED=SASK_LED_ON;
+	YELLOW_LED=SASK_LED_ON;
+	GREEN_LED=SASK_LED_ON;
 }

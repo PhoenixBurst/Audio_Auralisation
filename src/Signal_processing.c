@@ -1,4 +1,4 @@
-/*******  user\apps\Audio_Pitch_Detection\inc\FFT_processing.c
+/*******  user\apps\Audio\Audio_Pitch_Detection\src\Signal_processing.c
 *
 * Summary:
 *		FFT/Pitch detection functions
@@ -19,6 +19,7 @@
 *
 * Functions:
 *		void FFT(int framsize, fractional *audioIN, fractcomplex *compX)		
+*		void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX);
 *		int pitchDetection(fractcomplex *compXFftResults)
 *
 * Notes:
@@ -30,8 +31,7 @@
 *		Sören Schreiber, Student Kingston University, DSP Course, soeren.schreiber@arcor.de
 *
 * Version:
-*		1.1		23/03/2016  --  removed convertInputforFFT function, commented source code
-*		1.0		17/03/2016
+*		1.0		19/04/2016
 *
 */
 #include "..\inc\Signal_processing.h"
@@ -62,6 +62,25 @@ void FFT(int framesize, fractional *audioIN, fractcomplex *FFTcompResult)
 	//generate the DFT of the audio signal
 	FFTComplex(8,FFTcompResult,FFTcompWorkSpace,FFTcompTwidFactors,0xFF00);
 
+}
+
+/*
+*	This function runs an inverse FFT on the given input values and returns the results
+*/
+void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX)
+{
+	int i;
+	
+	//generate the first half of the set of twiddle factors required by the DFT
+	TwidFactorInit (7,compTwidFactors,1);//1 for inverse fourier transform
+
+	//generate the inverse DFT of the audio signals frequency spectrum
+	IFFTComplex(7,compWorkSpace,compX,compTwidFactors,0xFF00);
+
+	for(i=0;i<iFrameSize;i++)
+	{
+		frctAudioWorkSpace[i] = compWorkSpace[i].real;
+	}		
 }
 
 /*
