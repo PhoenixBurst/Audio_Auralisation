@@ -54,8 +54,12 @@ void readyState(); //display ready state on leds
 
 void errorState(); //display error state on leds
 
-void analysingState(); //display analysing state on leds
+void analysingState(int type); //display analysing state on leds
 
 void playbackState(); //display playback state on leds
+
+void turnOffAll();
+
+void turnOnAll();
 
 #endif

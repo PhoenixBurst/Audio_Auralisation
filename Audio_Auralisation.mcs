@@ -13,7 +13,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File001]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\ex_sask_led.o
 Folder=Intermediary
@@ -26,7 +26,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File002]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\sask.o
 Folder=Intermediary
@@ -39,7 +39,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File003]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\ex_audio_process.o
 Folder=Intermediary
@@ -52,7 +52,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File004]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\OCPWMDrv.o
 Folder=Intermediary
@@ -65,7 +65,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File005]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\ADCChannelDrv.o
 Folder=Intermediary
@@ -78,7 +78,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File006]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\ex_timer.o
 Folder=Intermediary
@@ -91,7 +91,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File007]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\Audio_Auralisation.o
 Folder=Intermediary
@@ -104,7 +104,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File008]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\Peripheral_control.o
 Folder=Intermediary
@@ -117,7 +117,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File009]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\Signal_processing.o
 Folder=Intermediary
@@ -130,7 +130,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-g -Wall
 TraceCmdString=
-DebugOptions=
+DebugOptions=-D__DEBUG -D__MPLAB_DEBUGGER_SKDE=1
 [File010]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\Audio_Auralisation.cof
 Folder=Output
@@ -143,7 +143,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)" -Map="$(BINDIR_)$(TARGETBASE).map" --report-mem
 TraceCmdString=
-DebugOptions=
+DebugOptions=--defsym=__MPLAB_DEBUG=1 --defsym=__MPLAB_DEBUGGER_SKDE=1 --defsym=__ICD2RAM=1
 [File011]
 Location=D:\Programms\DSP\Source_Code\Source_Tree\user\apps\Audio\Audio_Auralisation\Audio_Auralisation.hex
 Folder=Output
@@ -156,7 +156,7 @@ SOLK=<src>|D:\Programms\DSP\Source_Code\Source_Tree\user\libs\board\src\ex_sask_
 SuiteArgsString=
 ToolArgsString=-o"$(BINDIR_)$(TARGETBASE).$(TARGETSUFFIX)" -Map="$(BINDIR_)$(TARGETBASE).map" --report-mem
 TraceCmdString=
-DebugOptions=
+DebugOptions=--defsym=__MPLAB_DEBUG=1 --defsym=__MPLAB_DEBUGGER_SKDE=1 --defsym=__ICD2RAM=1
 [TOOL_LOC_STAMPS]
 tool_loc{069BD372-6CA0-40D4-BF2F-5DC806D05083}=D:\Programms\DSP\DEV_Envelopment\MPLAB C30\bin\pic30-gcc.exe
 tool_loc{433C3D55-811D-409D-A6BF-159CF9355B42}=D:\Programms\DSP\DEV_Envelopment\MPLAB C30\bin\pic30-ld.exe

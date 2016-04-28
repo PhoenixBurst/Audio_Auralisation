@@ -20,7 +20,7 @@
 * Functions:
 *		void FFT(int framsize, fractional *audioIN, fractcomplex *compX)		
 *		void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX);
-*		int pitchDetection(fractcomplex *compXFftResults)
+*		void generateAuralisation(fractsomplex *auralisation[FFT_FRAME_SIZE][FFT_FRAME_SIZE], fractcomplex *fftResults); 
 *
 * Notes:
 *		Pitch detector can detect pitches between 10 and 4000 HZ. 
@@ -32,6 +32,9 @@
 *
 * Version:
 *		1.0		19/04/2016
+*		1.1		21/04/2016	--	removed old function pitch detection
+*		1.2		23/04/2016	--	changed generateAuralisation function to support 2d array reference, utilising FRAME_SIZE definition in functions, removed input for framesize from functions
+*		1.3		25/04/2016	--	changed generateAuralisation input variables to solve array issue, reduced frame size to accomodate memory restrictions
 *
 */
 #include "..\inc\Signal_processing.h"
@@ -40,92 +43,56 @@
 fractcomplex FFTcompTwidFactors[FFT_FRAME_SIZE]__attribute__ ((space(xmemory),far)); //Twid factors with size "FFT_FRAME_SIZE" stored in the X-memory
 fractcomplex FFTcompWorkSpace[FFT_FRAME_SIZE]__attribute__ ((space(ymemory),far)); //Complex workspace for the FFT function with size "FFT_FRAME_SIZE" stored in the Y-memory
 
-int	peakFrequencyBin = 0; //integer store variable, used for to return the detected Pitch back to the main program
-
 /*
 *	This function runs the FFT on the given input values and returns the results into the address given with "FFTcombResult"
 */
-void FFT(int framesize, fractional *audioIN, fractcomplex *FFTcompResult)
+void FFT(fractional *audioIN, fractcomplex *FFTcompResult)
 {
 	int i; //loop counter 
 	
 	//copy fractional audio signal into real part of complex fractional data type
-	for(i=0;i<framesize;i++)
+	for(i=0;i<FFT_FRAME_SIZE;i++)
 	{
 		FFTcompWorkSpace[i].real = audioIN[i];
 		FFTcompWorkSpace[i].imag = 0;
 	}	
 	
 	//generate the first half of the set of twiddle factors required by the DFT
-	TwidFactorInit (8,FFTcompTwidFactors,0);
+	TwidFactorInit (LOG2N,FFTcompTwidFactors,0);
 
 	//generate the DFT of the audio signal
-	FFTComplex(8,FFTcompResult,FFTcompWorkSpace,FFTcompTwidFactors,0xFF00);
+	FFTComplex(LOG2N,FFTcompResult,FFTcompWorkSpace,FFTcompTwidFactors,0xFF00);
 
 }
 
 /*
 *	This function runs an inverse FFT on the given input values and returns the results
 */
-void inverseFFT(int framesize,fractional *frctAudioWorkSpace,fractcomplex *compX)
+void inverseFFT(fractional *frctAudioWorkSpace,fractcomplex *compX)
 {
 	int i;
 	
 	//generate the first half of the set of twiddle factors required by the DFT
-	TwidFactorInit (7,compTwidFactors,1);//1 for inverse fourier transform
+	TwidFactorInit (LOG2N,FFTcompTwidFactors,1);//1 for inverse fourier transform
 
 	//generate the inverse DFT of the audio signals frequency spectrum
-	IFFTComplex(7,compWorkSpace,compX,compTwidFactors,0xFF00);
+	IFFTComplex(LOG2N,FFTcompWorkSpace,compX,FFTcompTwidFactors,0xFF00);
 
-	for(i=0;i<iFrameSize;i++)
+	for(i=0;i<FFT_FRAME_SIZE;i++)
 	{
-		frctAudioWorkSpace[i] = compWorkSpace[i].real;
+		frctAudioWorkSpace[i] = FFTcompWorkSpace[i].real;
 	}		
 }
 
-/*
-*	This function detects the pitch in a given dataset of fractional complex FFT results
-*/
-int pitchDetection(fractcomplex *compXFftResults)
+/**
+*		This function will generate an array which contains the seperated pins from teh frequency spectrum
+**/
+void generateAuralisation(fractcomplex auralisation[FFT_FRAME_SIZE][FFT_FRAME_SIZE], fractcomplex fftResults[FFT_FRAME_SIZE])
 {
-	int detectedPitch=0; //stores the actual pitch frequency
-	int detectedPitchLvl=0; // stores an assigned pitch level to the detected pitch
-	fractional FftResults[FFT_FRAME_SIZE]; // stores the results from the function SquareMagnituteCplx
+	int i;
 
-	/* Compute the square magnitude of the complex FFT output array so we have a Real output vetor */
-	SquareMagnitudeCplx(FFT_FRAME_SIZE/2, &compXFftResults[0], &FftResults[0]);
-
-	/* Find the frequency Bin ( = index into the SigCmpx[] array) that has the largest energy*/
-	/* i.e., the largest spectral component */
-	VectorMax(FFT_FRAME_SIZE/2, &FftResults[0], &peakFrequencyBin);
-
-	/* Compute the frequency (in Hz) of the largest spectral component */
-	detectedPitch = peakFrequencyBin*(SAMPLING_RATE/FFT_FRAME_SIZE);
-	
-	if(detectedPitch<=800) //if detected pitch is below or equal to 800 HZ
+	for(i=0; i<FFT_FRAME_SIZE; i++)
 	{
-		detectedPitchLvl=0; //Low pitch level
+		auralisation[i][i]=fftResults[i];
 	}
-	else if(detectedPitch<=1600) //if pitch between 801 and 1600 HZ 
-	{
-		detectedPitchLvl=1; //Low\Medium pitch level
-	}
-	else if(detectedPitch<=2400) //if pitch between 1601 and 2400 HZ
-	{
-		detectedPitchLvl=2; //Medium pitch level
-	}
-	else if(detectedPitch<=3200) //if pitch between 2401 and 3200 HZ
-	{
-		detectedPitchLvl=3; //Medium\High pitch level
-	}
-	else if(detectedPitch<=4000) //if pitch between 3201 and 4000 HZ
-	{
-		detectedPitchLvl=4; //High pitch level
-	}
-	else //if pitch above 4000 HZ set error state 
-	{
-		detectedPitchLvl=5; //Error occured
-	}
-
-	return detectedPitchLvl; // return detected pitch level
 }

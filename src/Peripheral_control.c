@@ -66,12 +66,6 @@ int displayState(int state)	//hub function for state selection of the program
 
 void readyState()	//function to display ready state using the LEDs
 {
-	instruction_clock_frequency = clock_frequency;				//set up variable needed for fo the timer function
-	instruction_cycle_time = 1.0 / instruction_clock_frequency;	//set up variable needed for fo the timer function
-
-	ex_timer_init( instruction_cycle_time );			//init timer 
-
-	int led_selector=0;	//determins which LED will be turned on in the current cycle
 	while(currentState==0)	//while program is in ready state
 	{
 		if((SWITCH_S1==0) && (SWITCH_S2==1))	//checking if Switch 1 is pressed and switch 2 is unpressed (direct read of the buttons to bypass a debouncer problem)
@@ -83,8 +77,6 @@ void readyState()	//function to display ready state using the LEDs
 			GREEN_LED=SASK_LED_ON;
 			YELLOW_LED=SASK_LED_OFF;
 			RED_LED=SASK_LED_OFF;
-		
-			ex_timer_wait(timeout); //wait for the time[in seconds] set in timeout(defined in header file)
 		}
 	}
 }
@@ -97,15 +89,15 @@ void analysingState(int type) //display analysing state on leds
 	{
 		while(1)
 		{
-			if((SWITCH_S1==1) && (SWITCH_S2==0))	//check if switch 1 and 2 are pressed
+			if((SWITCH_S1==1) && (SWITCH_S2==0))	//check if switch 2 is pressed
 			{
 				currentState=4;			//set current state to play back
 				break;
 			}
 			
-			RED_LED=SASK_LED_OFF
+			RED_LED=SASK_LED_OFF;
 			YELLOW_LED=SASK_LED_ON;
-			GREEN_LED=SASK_LED_OFF
+			GREEN_LED=SASK_LED_OFF;
 		}
 	}
 	else if(type==1)
@@ -120,7 +112,7 @@ void analysingState(int type) //display analysing state on leds
 		YELLOW_LED=SASK_LED_ON;
 		GREEN_LED=SASK_LED_OFF;
 	}
-	else if(type=3)
+	else if(type==3)
 	{
 		RED_LED=SASK_LED_ON;
 		YELLOW_LED=SASK_LED_ON;

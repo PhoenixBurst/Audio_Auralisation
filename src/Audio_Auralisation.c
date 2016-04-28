@@ -1,4 +1,4 @@
-/*******        user\apps\audio\Audio_Pipe\Audio_Pitch_detection.c
+/*******        user\apps\audio\Audio_Auralisation\Audio_Auralisation.c
 * Usage:
 *  		Tested for use on the DsPIC starer kit 1
 * Summary:
@@ -26,9 +26,11 @@
 *		Sören Schreiber, Student Kingston University, DSP Course, soeren.schreiber@arcor.de
 *
 * History:
-*		Version 1.0     15/03/2016
-*		Version 1.1		18/03/2016		--		changed framesize to match the framesize of the fft
-*		Version 1.1		24/03/2016		--		added comments tot he source code
+*		Version 1.0     19/04/2016
+*		Version 1.1		20/04/2016	--	added audio output
+*		Version 1.2		25/04/2016	--	removed FRAME_SIZE, takenout of the Signal_processing.h now
+*		Version 1.3		26/04/2016	--	working base(prog states input output), no confirmed accuracy of result
+*
 *****/
 
 #include <p33FJ256GP506.h>
@@ -45,28 +47,32 @@
 #include "..\inc\Peripheral_control.h"
 #include "..\inc\Signal_processing.h"
 
-#define FRAME_SIZE 				256		//defined framesize for the signal[resolution]
+#define timercycle				0.1
 
 int		adcBuffer		[ADC_CHANNEL_DMA_BUFSIZE] 	__attribute__((space(dma)));	//buffer for the audio input, stored in the direct access memory
+int		ocPWMBuffer		[OCPWM_DMA_BUFSIZE]		__attribute__((space(dma)));
 
-fractional 		AudioIn[FRAME_SIZE];	//variable storing the audio input signal
+fractional 		AudioIn[FFT_FRAME_SIZE], AudioOut[FFT_FRAME_SIZE][FFT_FRAME_SIZE];	//variable storing the audio input signal
 
 int 		state;		//program state
-int			pitchResult;	//detected pitch level
 
-fractcomplex FFTcompResults[FRAME_SIZE]		__attribute__ ((space(ymemory),far)); //Fractional complex variable containing the results generated from the fft function (fractcomplex datatype is defined by the FFT function requirements)
-
+fractcomplex FFTcompResults[FFT_FRAME_SIZE]		__attribute__ ((space(ymemory),far)); //Fractional complex variable containing the results generated from the fft function (fractcomplex datatype is defined by the FFT function requirements)
+fractcomplex AuralisationWorkSpace[FFT_FRAME_SIZE][FFT_FRAME_SIZE];	
 ADCChannelHandle adcChannelHandle;	//handler for the audio input
+OCPWMHandle 	ocPWMHandle;
 
 ADCChannelHandle *pADCChannelHandle 	= &adcChannelHandle;
+OCPWMHandle 	*pOCPWMHandle 		= &ocPWMHandle;
 
 int main(void)		//main program
 {
 	ex_sask_init( );	//init sask
 
 	ADCChannelInit	(pADCChannelHandle,adcBuffer);	//init audio input handler
+	OCPWMInit		(pOCPWMHandle,ocPWMBuffer);
 
 	ADCChannelStart	(pADCChannelHandle);	//start audio input handler
+	OCPWMStart		(pOCPWMHandle);	
 
 	while(1)
 	{
@@ -74,39 +80,47 @@ int main(void)		//main program
 		{
 			state=0; //set state to 0[READY]
 			state=displayState(STATE_READY); //call ready state function and read new state back
-			displayLED(LED_OFF, LED_OFF, LED_OFF);	//turn off all LEDs when leaving ready state
+			turnOffAll();	//turn off all LEDs when leaving ready state
 		}
-		else if(state==1)		//Program is in RUN state
+		else if(state==1)		//Program is in READ state
 		{
 			while(ADCChannelIsBusy(pADCChannelHandle)); //read audio input
-			ADCChannelRead	(pADCChannelHandle,AudioIn,FRAME_SIZE);
+				ADCChannelRead	(pADCChannelHandle,AudioIn,FFT_FRAME_SIZE);
 			
-			FFT(FRAME_SIZE, &AudioIn, &FFTcompResults); //FFT function used on audio input, using FRAME_SIZE and returning the results in FFTcompResults
-			pitchResult=pitchDetection(&FFTcompResults);//detect the pitch of the FFT result and write the pitch level into pitch result
-
-			switch(pitchResult)
-			{
-				case 0: //if pitch level is 0 [between 10 and 800 Hz]
-					displayLED(LED_OFF, LED_OFF, LED_ON);	//turn on green LED
-					break;
-				case 1:	//if pitch level is 0 [between 801 and 1600 Hz]
-					displayLED(LED_OFF, LED_ON, LED_ON);	//turn on green and yellow LEDs
-					break;
-				case 2:	//if pitch level is 0 [between 1601 and 2400 Hz]
-					displayLED(LED_OFF, LED_ON, LED_OFF);	//turn on yellow LED
-					break;				
-				case 3:	//if pitch level is 0 [between 2401 and 3200 Hz]
-					displayLED(LED_ON, LED_ON, LED_OFF);	//turn on yellow and red LEDs
-					break;
-				case 4:	//if pitch level is 0 [between 3201 and 4000 Hz]
-					displayLED(LED_ON, LED_OFF, LED_OFF);	//turn on red LED
-					break;
-				default:	//if an error occurs
-					state=displayState(STATE_ERROR);	//display ready state
-					break;
-			}
+			state=3;
 		}
-		else if(state==2)		//Program is in ERROR state
+		else if(state==3)		//Program is in ANALZYE state
+		{
+			int i=0;
+
+				analysingState(1);
+			FFT(&AudioIn, &FFTcompResults); //FFT function used on audio input, using FFT_FRAME_SIZE and returning the results in FFTcompResults
+			
+				analysingState(2);
+			generateAuralisation(&AuralisationWorkSpace, &FFTcompResults);
+			
+				analysingState(3);
+			for(i=0;i<FFT_FRAME_SIZE;i++)
+			{
+				inverseFFT(AudioOut[i], AuralisationWorkSpace[i]);
+			}
+
+			state=displayState(STATE_ANALYSE);	//analising finished
+		}
+		else if(state==4)		//Program is in PLAY BACK state
+		{
+			int x;
+			for(x=0;x<FFT_FRAME_SIZE;x++)
+			{
+				while(OCPWMIsBusy(pOCPWMHandle));	
+					OCPWMWrite (pOCPWMHandle,AudioOut[x],FFT_FRAME_SIZE);
+
+				playbackState();
+			}
+			
+			state=0;
+		}
+		else		//Program is in ERROR state
 		{
 			state=displayState(STATE_ERROR);	//show error state on LEDs and read new state
 		}
