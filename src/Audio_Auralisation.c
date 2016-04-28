@@ -47,8 +47,6 @@
 #include "..\inc\Peripheral_control.h"
 #include "..\inc\Signal_processing.h"
 
-#define timercycle				0.1
-
 int		adcBuffer		[ADC_CHANNEL_DMA_BUFSIZE] 	__attribute__((space(dma)));	//buffer for the audio input, stored in the direct access memory
 int		ocPWMBuffer		[OCPWM_DMA_BUFSIZE]		__attribute__((space(dma)));
 
