@@ -2,22 +2,19 @@
 * Usage:
 *  		Tested for use on the DsPIC starer kit 1
 * Summary:
-*         Automatic pitch detection of a input signal sampled at 8kHz (displaying frequencies between 10Hz and 4kHz)
+*         Automatic auralisation of a input signal sampled at 8kHz
 *
 * Inputs:
 *       Audio codec input
 * Outputs:
 *       LED output
+*		Audio codec output
 *
 * Dependencies:
 *      Sask_Init()
 *
 * Notes:
-*		This pitch detector can identify a pitch set between 10 Hz and 4kHz. any frequency lower or higher will be treated as a high [red LED] pitch.
-*		This is due to the resolution not being able to pick up smaller frequencies, higher ones will show 0s in all pins and therefore the highest occurence will be displayed, 
-*		thereby setting the pitch to 4kHz.
-*
-*		The resolution is also responsiable for small errors in display occuring in a small window surrounding the switch points at 800, 1600, 2400, 3200 Hz[+- ~16 Hz]
+*		This auralisation can identify a pitch set up to 4kHz.
 *
 * ToDo:
 *     none
@@ -30,6 +27,7 @@
 *		Version 1.1		20/04/2016	--	added audio output
 *		Version 1.2		25/04/2016	--	removed FRAME_SIZE, takenout of the Signal_processing.h now
 *		Version 1.3		26/04/2016	--	working base(prog states input output), no confirmed accuracy of result
+*		Version 1.4		29/04/2016	--	added handler stop for output
 *
 *****/
 
@@ -115,7 +113,8 @@ int main(void)		//main program
 
 				playbackState();
 			}
-			
+
+			OCPWMStop (pOCPWMHandle); //stop audio output
 			state=0;
 		}
 		else		//Program is in ERROR state

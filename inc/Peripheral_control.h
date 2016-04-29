@@ -8,6 +8,7 @@
 *
 * Inputs:
 *		State of the programm		int
+*		Type						int
 *
 * Outputs:
 *		LEDs output
@@ -16,8 +17,10 @@
 *		int displayState(int state);
 *		void readyState();
 *		void errorState();
-*		void analysingState();
+*		void analysingState(int type);
 *		void playbackState();
+*		void turnOnAll();
+*		void turnOffAll();
 *
 * Notes:
 *		none
@@ -58,8 +61,8 @@ void analysingState(int type); //display analysing state on leds
 
 void playbackState(); //display playback state on leds
 
-void turnOffAll();
+void turnOffAll(); //turn off all LEDs
 
-void turnOnAll();
+void turnOnAll(); //turn on all LEDs
 
 #endif

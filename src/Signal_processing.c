@@ -1,21 +1,20 @@
 /*******  user\apps\Audio\Audio_Pitch_Detection\src\Signal_processing.c
 *
 * Summary:
-*		FFT/Pitch detection functions
+*		FFT/Auralisation functions
 *
 * Dependences:
 *		FFT_Processing.h
 *		dsp.h
 *		
-* Inputs:
-*		Audio input(fractional)
-*		Frame size (int)
+Inputs:
+*		Audio input (fractional)
 *		FFT result array (Complex)
-*		Pitch detection result(unsigned long)
 *
 * Outputs:
-*		Detected Pitch of a signal (int)
 *		FFT Results (fractcomplex)
+*		inverse FFT results(fractional)
+*		auralisation (fractcomplex)
 *
 * Functions:
 *		void FFT(int framsize, fractional *audioIN, fractcomplex *compX)		

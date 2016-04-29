@@ -9,13 +9,12 @@
 *
 * Inputs:
 *		Audio input (fractional)
-*		framesize (int)
 *		FFT result array (Complex)
-*		Pitch detection result(unsigned long)
 *
 * Outputs:
-*		Detected Pitch of a signal (int)
 *		FFT Results (fractcomplex)
+*		inverse FFT results(fractional)
+*		auralisation (fractcomplex)
 *
 * Functions:
 *		void FFT(int framsize, fractional *audioIN, fractcomplex *compX)		

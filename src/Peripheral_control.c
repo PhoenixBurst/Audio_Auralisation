@@ -3,8 +3,13 @@
 * Summary:
 *		Peripheral Control function for different programm states
 *
+* Dependences:
+*		ex_timer.h
+*		Peripheral_control.h
+*
 * Inputs:
-*		State of the programm			int
+*		State of the programm		int
+*		Type						int
 *
 * Outputs:
 *		LEDs output
@@ -13,8 +18,10 @@
 *		int displayState(int state);
 *		void readyState();
 *		void errorState();
-*		void analysingState();
+*		void analysingState(int type);
 *		void playbackState();
+*		void turnOnAll();
+*		void turnOffAll();
 *
 * Notes:
 *		none
